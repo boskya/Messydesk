@@ -1,8 +1,13 @@
 (function(){
 	test("Should create a few unique ids", function(){
-		var ids = [];
-		while (ids.length < 10){
-			ids.push(messyDesk.generateId());
+		var ids = {},
+			timesToAttempt = 10;
+
+		while (timesToAttempt--) {
+			var newId = messyDesk.generateId();
+			equal(ids[newId], undefined, newId);
+			ids[newId] = true;
 		}
+		ok(!ids['xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'], "initial value is not used");
 	});
 })();

@@ -1,6 +1,5 @@
 (function(){
-
-test("Should initialize new desk on load", function(){
-	equal();
-});
+	test("Should initialize new desk on load", function(){
+		ok(true);
+	});
 })();

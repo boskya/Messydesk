@@ -1,5 +1,7 @@
-messDesk.desk = Ember.Object.extend({
-	id: null,
-	name: "MyMess",
-	components: []
-});
+(function (){
+	messyDesk.desk = Ember.Object.extend({
+		id: null,
+		name: "MyMess",
+		components: []
+	});
+})();
