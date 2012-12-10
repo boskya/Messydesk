@@ -4,7 +4,7 @@
 			timesToAttempt = 10;
 
 		while (timesToAttempt--) {
-			var newId = messyDesk.generateId();
+			var newId = generateId();
 			equal(ids[newId], undefined, newId);
 			ids[newId] = true;
 		}
