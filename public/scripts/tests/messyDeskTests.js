@@ -1,11 +1,22 @@
 (function(){
+	module('messy desk tests', {
+		setup: $.noop,
+		teardown: function(){
+			localStorage.clear();			
+		}
+	});
+
 	test('Should initialize new desk on load', function(){
-		ok(true);
+		var desks = $.parseJSON(localStorage.getItem('desks'));
+		equal(desks.length, 1);
+
+		var desk = $.parseJSON(desks[0]);
+		equal(desk.name, "MyMess");
 	});
 
 	test('Should create a few unique ids', function(){
         var ids = {},
-                timesToAttempt = 10;
+            timesToAttempt = 10;
 
         while (timesToAttempt--) {
                 var newId = MessyDesk.generateId();
