@@ -5,16 +5,83 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>Messy Desk</title>
 		<meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="css/normalize.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="stylesheets/normalize.css">
+        <link rel="stylesheet" href="stylesheets/main.css">
 		<link rel="stylesheet" href="stylesheets/style.css" type="text/css"  />
+		
 	</head>
 	<body>
-		<div id='container'></div>
+		<div id='container' dropzone='move'>
+			<div id='desk'>
+				<div id='dragme1' class='desk-component' draggable='true' style="left:0px;top:0px">
+					Select your widget 1
+				</div>	
+				<div id='dragme2' class='desk-component' draggable='true' style="left:400px;top:1px">
+					Select your widget 2
+				</div>	
+
+			</div>
+		</div>
 	</body>
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="http://cloud.github.com/downloads/emberjs/ember.js/ember-1.0.0-pre.2.min.js"></script>
-	<script type="text/javascript" src="scripts/messydesk.js"></script>
-	<script type="text/javascript" src="scripts/models/desk.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+
+	<script>
+		var offset_data; //Global variable as Chrome doesn't allow access to event.dataTransfer in dragover
+
+		function drag_start(event) {
+
+		    var left = parseInt($(event.target).css('left'), 10) - event.clientX;
+	    	var top = parseInt($(event.target).css('top'), 10) - event.clientY;
+	    	offset_data = left + ',' + top + ',' + $(event.target).attr('id');
+	
+   		 	event.dataTransfer.setData("text/plain",offset_data);
+		} 
+
+		function drag_over(event) { 
+		    var offset;
+    		
+    		try {
+        		offset = event.dataTransfer.getData("text/plain").split(',');
+		    } 
+    		catch(e) {
+        		offset = offset_data.split(',');
+    		}
+
+    		var dm = $('#' + offset[2]);
+		    $(dm).css("left",(event.clientX + parseInt(offset[0],10)) + 'px');
+   			$(dm).css("top",(event.clientY + parseInt(offset[1],10)) + 'px');
+    		event.preventDefault(); 
+    		
+    		return false; 
+		} 
+
+		function drop(event) { 
+    		var offset;
+		
+		    try {
+        		offset = event.dataTransfer.getData("text/plain").split(',');
+    		} 
+    		catch(e) {
+        		offset = offset_data.split(',');
+    		}
+
+
+    		var $dm = $('#' + offset[2]);
+   			$dm.css("left",(event.clientX + parseInt(offset[0],10)) + 'px');
+   			$dm.css("top",(event.clientY + parseInt(offset[1],10)) + 'px');
+   			event.preventDefault();
+		    return false;
+		} 
+
+		var dm = $('.desk-component').each(function(index, deskComponent){
+			deskComponent.addEventListener('dragstart',drag_start,false);
+		});
+
+		var target = document.getElementById('desk');
+		target.addEventListener('dragover',drag_over,false); 
+		target.addEventListener('drop',drop,false); 
+
+		
+		</script>
 
 </html>
