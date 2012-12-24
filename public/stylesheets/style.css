@@ -8,6 +8,11 @@ a {
 
 #container{
 	background-color: tan;
-	width: 2000px;
-	height: 2000px;
+	width: 200px;
+	height: 200px;
+}
+
+.desk-name {
+	right: 0;
+	text-align: right;
 }

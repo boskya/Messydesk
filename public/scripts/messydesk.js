@@ -25,27 +25,28 @@
 
 		createDesk: function(){
 			var desk = MessyDesk.Desk.create({
-				id: MessyDesk.generateId()
+				id: MessyDesk.generateId(),
+                name: 'MyMess'
 			});
 			this.pushObject(desk);
 			return desk;
 		}
 	});
 
-	MessyDesk.DeskView = Ember.View.extend({
-	  initialize: function() {
-	  	var desks = $.parseJSON(localStorage.getItem('desks'));
-		if (!desks || desks.length === 0){
-		  	desks = [];
-
-		  	var controller = MessyDesk.DeskController.create();
-			desks.push(controller.createDesk());
-			localStorage.setItem('desks', JSON.stringify(desks));
-		}
-	  }
-	});
-
-	var view = MessyDesk.DeskView.create();
-	view.initialize();
 	MessyDesk.initialize();
-})();
+
+  	var desks = $.parseJSON(localStorage.getItem('desks'));
+	if (!desks || desks.length === 0) {
+	  	desks = [];
+
+	  	var controller = MessyDesk.DeskController.create();
+		desks.push(controller.createDesk());
+		localStorage.setItem('desks', JSON.stringify(desks));
+	}
+
+	var view = Ember.View.create({
+		name: desks[0].name,
+		templateName: 'desk'
+	});
+	view.appendTo($(MessyDesk.rootElement));
+}());

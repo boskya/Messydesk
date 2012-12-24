@@ -2,7 +2,7 @@
 	module('messy desk tests', {
 		setup: $.noop,
 		teardown: function(){
-			localStorage.clear();			
+			localStorage.clear();
 		}
 	});
 
