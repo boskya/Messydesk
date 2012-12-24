@@ -6,6 +6,10 @@
         <script id='desk' data-template-name='desk' type="text/x-handlebars">
             <span class='desk-name'>{{name}}</span>
         </script>
+        <script id='nameDesk' data-template-name='desk' type="text/x-handlebars">
+            <input class='desk-name' value={{name}} />
+            {{view MessyDesk.Name name="Name" id="Name" valueBinding="Desk.Name"}}
+        </script>
 	</head>
 	<body>
 		<div id="qunit"></div>

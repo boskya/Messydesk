@@ -20,21 +20,14 @@
 		})
 	});
 
-	MessyDesk.DeskController = Ember.ArrayProxy.extend({
-		content: [],
-
-		createDesk: function(){
-			var desk = MessyDesk.Desk.create({
-				id: MessyDesk.generateId(),
-                name: 'MyMess'
-			});
-			this.pushObject(desk);
-			return desk;
-		}
-	});
-
     MessyDesk.DeskView = Ember.View.extend({
         templateName: 'desk'
+    });
+
+    MessyDesk.Name = Ember.TextField.extend({
+        change: function (e){
+            MessyDesk.MyDesk.name = e.srcElement.value;
+        }
     });
 
     MessyDesk.initialize();

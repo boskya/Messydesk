@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="stylesheets/main.css">
 		<link rel="stylesheet" href="stylesheets/style.css" type="text/css"  />
 		<script id='desk' data-template-name='desk' type="text/x-handlebars">
-	        <div class='desk-name'>{{name}}</div>
+            {{view MessyDesk.Name name="Name" id="Name" valueBinding="MessyDesk.MyDesk.name"}}
 		</script>
 	</head>
 	<body>
@@ -18,11 +18,17 @@
 		<script type="text/javascript" src="scripts/vendor/handlebars-1.0.0.beta.6.js"></script>
 		<script type="text/javascript" src="scripts/vendor/ember.js"></script>
 		<script type="text/javascript" src="scripts/messydesk.js"></script>
+
         <script type="text/javascript">
-            var desks = [];
-            var view = Ember.View.create({
+            //global...may need to move into controller
+            MessyDesk.MyDesk = MessyDesk.Desk.create({
                 name: 'MyMess'
             });
+
+            var view = MessyDesk.DeskView.create({
+                name: MessyDesk.MyDesk.name
+            });
+
             view.appendTo($(MessyDesk.rootElement));
         </script>
 	</body>
