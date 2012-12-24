@@ -3,7 +3,7 @@
 		rootElement: '#container',
 		generateId: function () {
 			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-		    	var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 		    	return v.toString(16);
 		    });
 		},
@@ -33,20 +33,9 @@
 		}
 	});
 
-	MessyDesk.initialize();
+    MessyDesk.DeskView = Ember.View.extend({
+        templateName: 'desk'
+    });
 
-  	var desks = $.parseJSON(localStorage.getItem('desks'));
-	if (!desks || desks.length === 0) {
-	  	desks = [];
-
-	  	var controller = MessyDesk.DeskController.create();
-		desks.push(controller.createDesk());
-		localStorage.setItem('desks', JSON.stringify(desks));
-	}
-
-	var view = Ember.View.create({
-		name: desks[0].name,
-		templateName: 'desk'
-	});
-	view.appendTo($(MessyDesk.rootElement));
+    MessyDesk.initialize();
 }());
