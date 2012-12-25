@@ -10,6 +10,7 @@
 		<link rel="stylesheet" href="stylesheets/style.css" type="text/css"  />
 		<script id='desk' data-template-name='desk' type="text/x-handlebars">
             {{view MessyDesk.Name name="Name" id="Name" valueBinding="MessyDesk.MyDesk.name"}}
+            <span {{action "deleteDesk"}}>X</span>
 		</script>
 	</head>
 	<body>
@@ -18,18 +19,5 @@
 		<script type="text/javascript" src="scripts/vendor/handlebars-1.0.0.beta.6.js"></script>
 		<script type="text/javascript" src="scripts/vendor/ember.js"></script>
 		<script type="text/javascript" src="scripts/messydesk.js"></script>
-
-        <script type="text/javascript">
-            //global...may need to move into controller
-            MessyDesk.MyDesk = MessyDesk.Desk.create({
-                name: 'MyMess'
-            });
-
-            var view = MessyDesk.DeskView.create({
-                name: MessyDesk.MyDesk.name
-            });
-
-            view.appendTo($(MessyDesk.rootElement));
-        </script>
 	</body>
 </html>
