@@ -3,9 +3,55 @@
 		rootElement: '#container',
         _view: null,
         ready: function (){
+            function removeMouseMoveEvent(){
+                $('.ghost').remove();
+                $(this).unbind('mousemove');
+            }
+
             this.initialize();
             this.DeskController.createNew();
             this.createView();
+            $(this.rootElement)
+                .bind('mousedown', function(e){
+                    removeMouseMoveEvent();
+                    var ghost = $('<div class="ghost" />').appendTo('body'),
+                        left = e.pageX,
+                        top = e.pageY;
+
+                    ghost.css({
+                        'left': left,
+                        'top': top,
+                        'width': '1px',
+                        'height': '1px'
+                    });
+                    $(this).bind('mousemove', function (e){
+                        var width = e.pageX - left,
+                            height = e.pageY - top,
+                            newLeft = left,
+                            newTop = top;
+
+                        if (width < 0){
+                            newLeft = e.pageX;
+                        }
+
+                        if (height < 0){
+                            newTop = e.pageY;
+                        }
+
+                        ghost.css({
+                            'left': newLeft,
+                            'top': newTop,
+                            'width': Math.abs(width),
+                            'height': Math.abs(height)
+                        });
+                        return false;
+                    });
+
+                    $(this).bind('mouseup', removeMouseMoveEvent);
+
+                    return false;
+                })
+                .bind('mouseup, mouseout, mouseleave', removeMouseMoveEvent);
         },
         generateId: function () {
 			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

@@ -25,3 +25,9 @@ input {
 .delete {
     cursor: pointer;
 }
+
+.ghost {
+    background-color: white;
+    opacity: .3;
+    position: absolute;
+}
