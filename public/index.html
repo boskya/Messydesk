@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="stylesheets/style.css" type="text/css"  />
 		<script id='desk' data-template-name='desk' type="text/x-handlebars">
             <span class='desk-admin'>
-                {{view MessyDesk.Name name="Name" id="Name" valueBinding="MessyDesk.MyDesk.name"}}
+                {{view MessyDesk.NameField name="NameField" id="NameField" valueBinding="MessyDesk.DeskController.name"}}
                 <span class='delete' {{action "deleteDesk"}}>X</span>
             </span>
 		</script>
