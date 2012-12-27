@@ -1,10 +1,10 @@
 (function(){
-    var DEFAULT_NAME = "MyMess";
     window.MessyDesk = Ember.Application.create({
 		rootElement: '#container',
         _view: null,
         ready: function (){
             this.initialize();
+            this.DeskController.createNew();
             this.createView();
         },
         generateId: function () {
@@ -14,9 +14,6 @@
 		    });
 		},
         DeskController: Ember.ArrayController.create({
-            content: [],
-            id: null,
-            name: DEFAULT_NAME,
 			toJSON: function() {
 				return "{\"id\": {id}, \"name\": {name}, \"items\": {items}}"
 					.replace("{id}", JSON.stringify(this.id))
@@ -30,7 +27,7 @@
             createNew: function () {
                 this.content = [];
                 this.id  = null;
-                this.name = DEFAULT_NAME;
+                this.name = "MyMess";
             }
 		}),
         Item: Ember.Object.extend({
