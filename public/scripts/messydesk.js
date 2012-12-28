@@ -2,7 +2,13 @@
     window.MessyDesk = Ember.Application.create({
 		rootElement: '#container',
         _view: null,
-        ready: function (){
+        ready: function () {
+            this.initialize();
+            this.DeskController.createNew();
+            this.createView();
+            this.bindEvents();
+        },
+        bindEvents: function () {
             function removeGhost(){
                 $('.ghost').remove();
                 $(this).unbind('mousemove');
@@ -58,9 +64,6 @@
                 return false;
             }
 
-            this.initialize();
-            this.DeskController.createNew();
-            this.createView();
             $(this.rootElement)
                 .bind('mousedown', createGhost)
                 .bind('mouseup, mouseout, mouseleave', removeGhost);
