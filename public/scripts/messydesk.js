@@ -3,55 +3,75 @@
 		rootElement: '#container',
         _view: null,
         ready: function (){
-            function removeMouseMoveEvent(){
+            function removeGhost(){
                 $('.ghost').remove();
                 $(this).unbind('mousemove');
+                this.removeEventListener("touchmove");
+            }
+
+            function createGhost(cursor){
+                removeGhost();
+                var ghost = $('<div class="ghost" />').appendTo('body'),
+                    left = cursor.pageX,
+                    top = cursor.pageY;
+
+                ghost.css({
+                    'left': left,
+                    'top': top,
+                    'width': '1px',
+                    'height': '1px'
+                });
+
+                function resizeGhost(cursor) {
+                    var width = cursor.pageX - left,
+                        height = cursor.pageY - top,
+                        newLeft = left,
+                        newTop = top;
+
+                    if (width < 0){
+                        newLeft = cursor.pageX;
+                    }
+
+                    if (height < 0){
+                        newTop = cursor.pageY;
+                    }
+
+                    ghost.css({
+                        'left': newLeft,
+                        'top': newTop,
+                        'width': Math.abs(width),
+                        'height': Math.abs(height)
+                    });
+                    return false;
+                }
+
+                $(this)
+                    .bind('mousemove', resizeGhost)
+                    .bind('mouseup', removeGhost);
+
+                this.addEventListener('touchmove', function (e) {
+                    e.preventDefault();
+                    resizeGhost(e.targetTouches[0]);
+                });
+                this.addEventListener('touchend', removeGhost);
+
+                return false;
             }
 
             this.initialize();
             this.DeskController.createNew();
             this.createView();
             $(this.rootElement)
-                .bind('mousedown', function(e){
-                    removeMouseMoveEvent();
-                    var ghost = $('<div class="ghost" />').appendTo('body'),
-                        left = e.pageX,
-                        top = e.pageY;
+                .bind('mousedown', createGhost)
+                .bind('mouseup, mouseout, mouseleave', removeGhost);
 
-                    ghost.css({
-                        'left': left,
-                        'top': top,
-                        'width': '1px',
-                        'height': '1px'
-                    });
-                    $(this).bind('mousemove', function (e){
-                        var width = e.pageX - left,
-                            height = e.pageY - top,
-                            newLeft = left,
-                            newTop = top;
-
-                        if (width < 0){
-                            newLeft = e.pageX;
-                        }
-
-                        if (height < 0){
-                            newTop = e.pageY;
-                        }
-
-                        ghost.css({
-                            'left': newLeft,
-                            'top': newTop,
-                            'width': Math.abs(width),
-                            'height': Math.abs(height)
-                        });
-                        return false;
-                    });
-
-                    $(this).bind('mouseup', removeMouseMoveEvent);
-
-                    return false;
-                })
-                .bind('mouseup, mouseout, mouseleave', removeMouseMoveEvent);
+            $(this.rootElement)[0].addEventListener('touchstart', function (e){
+                e.preventDefault();
+                createGhost(e.targetTouches[0])
+            });
+            $(this.rootElement)[0].addEventListener('touchend', removeGhost);
+            $(this.rootElement)[0].addEventListener('touchleave', removeGhost);
+            $(this.rootElement)[0].addEventListener('touchcancel', removeGhost);
         },
         generateId: function () {
 			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
