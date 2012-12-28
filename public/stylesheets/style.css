@@ -31,3 +31,9 @@ input {
     opacity: .3;
     position: absolute;
 }
+
+.desk-item {
+    background-color: white;
+    position: absolute;
+    border: 1px solid #000000;
+}

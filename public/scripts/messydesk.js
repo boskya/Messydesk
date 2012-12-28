@@ -6,13 +6,42 @@
             this.initialize();
             this.DeskController.createNew();
             this.createView();
+
+            //TODo: initialize ghostbox instead of calling this method.
             this.bindEvents();
         },
+        //TODO: rebuild as ghostbox module
         bindEvents: function () {
+            //TODO: options for threshhold
+            var WIDTH_TO_LOCK = 200,
+                HEIGHT_TO_LOCK = 200;
+
+            //TODO: this event should be passed into ghostbox
+            function onThreshold(coord){
+                //use ember view
+                var item = $('<div class="desk-item" />');
+                item.css({
+                    left: coord.left,
+                    top: coord.top,
+                    width: coord.width,
+                    height: coord.height
+                });
+                item.appendTo('body');
+            }
+
             function removeGhost(){
-                $('.ghost').remove();
+                var ghost = $('.ghost');
+                if (ghost.width() > WIDTH_TO_LOCK) {
+                    onThreshold({
+                        left: ghost.css('left'),
+                        top: ghost.css('top'),
+                        width: ghost.width(),
+                        height: ghost.height()
+                    });
+                }
                 $(this).unbind('mousemove');
                 this.removeEventListener("touchmove");
+                ghost.remove();
             }
 
             function createGhost(cursor){
