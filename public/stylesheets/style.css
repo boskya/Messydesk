@@ -35,5 +35,5 @@ input {
 .desk-item {
     background-color: white;
     position: absolute;
-    border: 1px solid #000000;
+    border: 2px solid #000000;
 }

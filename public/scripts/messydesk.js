@@ -14,7 +14,8 @@
         bindEvents: function () {
             //TODO: options for threshhold
             var WIDTH_TO_LOCK = 50,
-                HEIGHT_TO_LOCK = 50;
+                HEIGHT_TO_LOCK = 50,
+                touchMoveHandler;
 
             //TODO: this event should be passed into ghostbox
             function onThreshold(coord){
@@ -33,9 +34,51 @@
                 itemView.appendTo(MessyDesk.rootElement);
             }
 
+            // TODO: configuration. default to false
+            function collisionsDetected(element){
+                if (!element || element.length === 0){
+                    return false;
+                }
+                var $element = $(element),
+                    elementOffset = $element.offset(),
+                    elementRight = elementOffset.left + $element.width(),
+                    elementBottom = elementOffset.top + $element.height(),
+                    collisionsFound = [];
+
+                $('.desk-item').each(function(index, deskItem){
+                    var $deskItem = $(deskItem),
+                        deskItemOffset = $deskItem.offset(),
+                        deskItemRight = deskItemOffset.left + $deskItem.width(),
+                        deskItemBottom = deskItemOffset.top + $deskItem.height();
+
+                    if (((elementOffset.left >= deskItemOffset.left && elementOffset.left <= deskItemRight) ||
+                        (elementRight >= deskItemOffset.left && elementRight <= deskItemRight)) &&
+                        ((elementOffset.top >= deskItemOffset.top && elementOffset.top <= deskItemBottom) ||
+                        (elementBottom >= deskItemOffset.top && elementBottom <= deskItemBottom)) ||
+                        ((deskItemOffset.left >= elementOffset.left && deskItemOffset.left <= elementRight) ||
+                        (deskItemRight >= elementOffset.left && deskItemRight <= elementRight)) &&
+                        ((deskItemOffset.top >= elementOffset.top && deskItemOffset.top <= elementBottom) ||
+                        (deskItemBottom >= elementOffset.top && deskItemBottom <= elementBottom))) {
+                        collisionsFound.push($deskItem);
+                    }
+                });
+                return collisionsFound;
+            }
+
+            function onCollision(collisions) {
+                $(collisions).each(function (index, element){
+                    $(element).css('border-style', 'dotted');
+                });
+            }
+
             function removeGhost(){
-                var ghost = $('.ghost');
-                if (ghost.width() > WIDTH_TO_LOCK && ghost.height() > HEIGHT_TO_LOCK) {
+                var ghost = $('.ghost'),
+                    collisions = collisionsDetected(ghost);
+
+                if (collisions.length > 0){
+                    onCollision(collisions);
+                }
+                else if (ghost.width() > WIDTH_TO_LOCK && ghost.height() > HEIGHT_TO_LOCK) {
                     onThreshold({
                         left: ghost.css('left'),
                         top: ghost.css('top'),
@@ -43,12 +86,18 @@
                         height: ghost.height()
                     });
                 }
-                $(this).unbind('mousemove');
-                this.removeEventListener("touchmove");
+                $(MessyDesk.rootElement).unbind('mousemove mouseout mouseup');
+                this.removeEventListener("touchmove", touchMoveHandler);
                 ghost.remove();
             }
 
+            // TODO: passed in override, use view
+            function onCreateGhost(){
+                $('.desk-item').css('border-style', '');
+            }
+
             function createGhost(cursor){
+                onCreateGhost();
                 removeGhost();
                 var ghost = $('<div class="ghost" />').appendTo('body'),
                     left = cursor.pageX,
@@ -84,11 +133,16 @@
                     return false;
                 }
 
-                $(this)
+                $(MessyDesk.rootElement)
                     .bind('mousemove', resizeGhost)
-                    .bind('mouseup', removeGhost);
+                    .bind('mouseup', removeGhost)
+                    .bind('mouseout', function (e){
+                        if (!$(e.relatedTarget).is('.desk-item') && !$(e.relatedTarget).is('#container')){
+                            removeGhost();
+                        }
+                    });
 
-                this.addEventListener('touchmove', function (e) {
+                touchMoveHandler = this.addEventListener('touchmove', function (e) {
                     e.preventDefault();
                     resizeGhost(e.targetTouches[0]);
                 });
@@ -96,10 +150,9 @@
 
                 return false;
             }
-
             $(this.rootElement)
                 .bind('mousedown', createGhost)
-                .bind('mouseup, mouseout', removeGhost);
+                .bind('mouseup', removeGhost);
 
             $(this.rootElement)[0].addEventListener('touchstart', function (e){
                 e.preventDefault();
