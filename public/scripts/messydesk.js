@@ -13,8 +13,8 @@
         //TODO: rebuild as ghostbox module
         bindEvents: function () {
             //TODO: options for threshhold
-            var WIDTH_TO_LOCK = 200,
-                HEIGHT_TO_LOCK = 200;
+            var WIDTH_TO_LOCK = 50,
+                HEIGHT_TO_LOCK = 50;
 
             //TODO: this event should be passed into ghostbox
             function onThreshold(coord){
@@ -31,7 +31,7 @@
 
             function removeGhost(){
                 var ghost = $('.ghost');
-                if (ghost.width() > WIDTH_TO_LOCK) {
+                if (ghost.width() > WIDTH_TO_LOCK && ghost.height() > HEIGHT_TO_LOCK) {
                     onThreshold({
                         left: ghost.css('left'),
                         top: ghost.css('top'),
@@ -95,15 +95,13 @@
 
             $(this.rootElement)
                 .bind('mousedown', createGhost)
-                .bind('mouseup, mouseout, mouseleave', removeGhost);
+                .bind('mouseup, mouseout', removeGhost);
 
             $(this.rootElement)[0].addEventListener('touchstart', function (e){
                 e.preventDefault();
                 createGhost(e.targetTouches[0])
             });
             $(this.rootElement)[0].addEventListener('touchend', removeGhost);
-            $(this.rootElement)[0].addEventListener('touchleave', removeGhost);
-            $(this.rootElement)[0].addEventListener('touchcancel', removeGhost);
         },
         generateId: function () {
 			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
