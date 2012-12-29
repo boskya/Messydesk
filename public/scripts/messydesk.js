@@ -18,15 +18,19 @@
 
             //TODO: this event should be passed into ghostbox
             function onThreshold(coord){
-                //use ember view
-                var item = $('<div class="desk-item" />');
-                item.css({
-                    left: coord.left,
-                    top: coord.top,
-                    width: coord.width,
-                    height: coord.height
+                var item = MessyDesk.DeskController.createItem(coord);
+                var itemView = MessyDesk.DeskItemView.create({
+                    templateName: 'deskItem',
+                    classNameBindings: ['class1'],
+                    class1: 'desk-item',
+                    attributeBindings: ['style'],
+                    style: 'left: {left};top: {top}; width: {width}px; height: {height}px'
+                        .replace('{left}', coord.left)
+                        .replace('{top}', coord.top)
+                        .replace('{width}', coord.width)
+                        .replace('{height}', coord.height)
                 });
-                item.appendTo('body');
+                itemView.appendTo(MessyDesk.rootElement);
             }
 
             function removeGhost(){
@@ -119,6 +123,7 @@
             createItem: function() {
                 var item = MessyDesk.Item.create();
                 this.addObject(item);
+                return item;
             },
             createNew: function () {
                 this.content = [];
@@ -143,6 +148,9 @@
                 MessyDesk._view.destroy();
                 MessyDesk.createView();
             }
+        }),
+        DeskItemView: Ember.View.extend({
+            templateName: 'deskItem'
         }),
         createView: function (){
             this._view = this.DeskView.create({

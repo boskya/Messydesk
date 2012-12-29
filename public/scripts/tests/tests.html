@@ -4,10 +4,13 @@
 		<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.10.0.css" type="text/css">
         <script type="text/javascript" src="../lib/qunit.js"></script>
         <script id='desk' data-template-name='desk' type="text/x-handlebars">
-            <span class='desk-name'>{{name}}</span>
+            <span class='desk-admin'>
+                {{view MessyDesk.NameField name="NameField" id="NameField" valueBinding="MessyDesk.DeskController.name"}}
+                <span class='delete' {{action "deleteDesk"}}>X</span>
+            </span>
         </script>
-        <script id='nameDesk' data-template-name='desk' type="text/x-handlebars">
-            {{view MessyDesk.NameField name="NameField" id="NameField" valueBinding="MessyDesk.MyDesk.name"}}
+        <script id='deskItem' data-template-name='deskItem' type="text/x-handlebars">
+            <div class='desk-item' />
         </script>
 	</head>
 	<body>
