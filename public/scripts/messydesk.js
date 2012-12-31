@@ -7,7 +7,7 @@
             this.DeskController.createNew();
             this.createView();
 
-            //TODo: initialize ghostbox instead of calling this method.
+            //TODO: initialize ghostbox instead of calling this method.
             this.bindEvents();
         },
         //TODO: rebuild as ghostbox module
@@ -106,7 +106,14 @@
                 $('.desk-item').removeClass('selected');
             }
 
-            function createGhost(cursor){
+            function createGhost(e){
+                var cursor = e;
+                if (!$(e.srcElement).is(MessyDesk.rootElement)){
+                    return;
+                }
+                if (e.type.substring(0, 5) === 'touch'){
+                    cursor = e.targetTouches[0];
+                }
                 onCreateGhost();
                 removeGhost();
                 var ghost = $('<div class="ghost" />').appendTo('body'),
@@ -120,8 +127,9 @@
                     'height': '1px'
                 });
 
-                function resizeGhost(cursor) {
-                    var width = cursor.pageX - left,
+                function resizeGhost(e) {
+                    var cursor = e.type.substring(0, 5) === 'touch' ? e.targetTouches[0] : e,
+                        width = cursor.pageX - left,
                         height = cursor.pageY - top,
                         newLeft = left,
                         newTop = top;
@@ -154,7 +162,7 @@
 
                 touchMoveHandler = this.addEventListener('touchmove', function (e) {
                     e.preventDefault();
-                    resizeGhost(e.targetTouches[0]);
+                    resizeGhost(e);
                 });
                 this.addEventListener('touchend', removeGhost);
 
@@ -166,7 +174,7 @@
 
             $(this.rootElement)[0].addEventListener('touchstart', function (e){
                 e.preventDefault();
-                createGhost(e.targetTouches[0])
+                createGhost(e);
             });
             $(this.rootElement)[0].addEventListener('touchend', removeGhost);
         },
