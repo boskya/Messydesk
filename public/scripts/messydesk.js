@@ -213,6 +213,10 @@
         }),
         DeskView: Ember.View.extend({
             templateName: 'desk',
+            destroy: function(){
+                $(MessyDesk.rootElement).empty();
+                this._super();
+            },
             deleteDesk: function () {
                 MessyDesk.DeskController.createNew();
 
