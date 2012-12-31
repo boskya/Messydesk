@@ -12,7 +12,7 @@
         },
         //TODO: rebuild as ghostbox module
         bindEvents: function () {
-            //TODO: options for threshhold
+            //TODO: options for threshold
             var WIDTH_TO_LOCK = 50,
                 HEIGHT_TO_LOCK = 50,
                 touchMoveHandler;
@@ -49,16 +49,26 @@
                     var $deskItem = $(deskItem),
                         deskItemOffset = $deskItem.offset(),
                         deskItemRight = deskItemOffset.left + $deskItem.width(),
-                        deskItemBottom = deskItemOffset.top + $deskItem.height();
+                        deskItemBottom = deskItemOffset.top + $deskItem.height(),
+                        elementLeftIsBetweenItemBounds = elementOffset.left >= deskItemOffset.left && elementOffset.left <= deskItemRight,
+                        elementRightIsBetweenItemBounds = elementRight >= deskItemOffset.left && elementRight <= deskItemRight,
+                        elementTopIsBetweenItemBounds = elementOffset.top >= deskItemOffset.top && elementOffset.top <= deskItemBottom,
+                        elementBottomIsBetweenItemBounds = elementBottom >= deskItemOffset.top && elementBottom <= deskItemBottom,
+                        itemLeftIsBetweenElementBounds = deskItemOffset.left >= elementOffset.left && deskItemOffset.left <= elementRight,
+                        itemRightIsBetweenElementBounds = deskItemRight >= elementOffset.left && deskItemRight <= elementRight,
+                        itemTopIsBetweenElementBounds = deskItemOffset.top >= elementOffset.top && deskItemOffset.top <= elementBottom,
+                        itemBottomIsBetweenElementBounds = deskItemBottom >= elementOffset.top && deskItemBottom <= elementBottom,
+                        itemSidesAreWithinElementBounds = itemLeftIsBetweenElementBounds || itemRightIsBetweenElementBounds,
+                        elementTopOrBottomIsWithinItemBounds = elementTopIsBetweenItemBounds || elementBottomIsBetweenItemBounds,
+                        elementSidesAreWithinItemBounds = elementLeftIsBetweenItemBounds || elementRightIsBetweenItemBounds,
+                        itemTopOrBottomIsWithinElementBounds = itemTopIsBetweenElementBounds || itemBottomIsBetweenElementBounds;
 
-                    if (((elementOffset.left >= deskItemOffset.left && elementOffset.left <= deskItemRight) ||
-                        (elementRight >= deskItemOffset.left && elementRight <= deskItemRight)) &&
-                        ((elementOffset.top >= deskItemOffset.top && elementOffset.top <= deskItemBottom) ||
-                        (elementBottom >= deskItemOffset.top && elementBottom <= deskItemBottom)) ||
-                        ((deskItemOffset.left >= elementOffset.left && deskItemOffset.left <= elementRight) ||
-                        (deskItemRight >= elementOffset.left && deskItemRight <= elementRight)) &&
-                        ((deskItemOffset.top >= elementOffset.top && deskItemOffset.top <= elementBottom) ||
-                        (deskItemBottom >= elementOffset.top && deskItemBottom <= elementBottom))) {
+                    if ((elementSidesAreWithinItemBounds && elementTopOrBottomIsWithinItemBounds) ||
+                        (itemSidesAreWithinElementBounds && itemTopOrBottomIsWithinElementBounds) ||
+                        (elementLeftIsBetweenItemBounds && elementRightIsBetweenItemBounds && itemTopOrBottomIsWithinElementBounds) ||
+                        (itemTopIsBetweenElementBounds && itemBottomIsBetweenElementBounds && elementSidesAreWithinItemBounds) ||
+                        (itemLeftIsBetweenElementBounds && itemRightIsBetweenElementBounds && elementTopOrBottomIsWithinItemBounds) ||
+                        (elementTopIsBetweenItemBounds && elementBottomIsBetweenItemBounds && itemSidesAreWithinElementBounds)) {
                         collisionsFound.push($deskItem);
                     }
                 });
