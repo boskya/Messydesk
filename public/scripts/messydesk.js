@@ -77,7 +77,7 @@
 
             function onCollision(collisions) {
                 $(collisions).each(function (index, element){
-                    $(element).css('border-style', 'dotted');
+                    $(element).addClass('selected');
                 });
             }
 
@@ -103,7 +103,7 @@
 
             // TODO: passed in override, use view
             function onCreateGhost(){
-                $('.desk-item').css('border-style', '');
+                $('.desk-item').removeClass('selected');
             }
 
             function createGhost(cursor){
