@@ -2,6 +2,7 @@
     window.MessyDesk = Ember.Application.create({
 		rootElement: '#container',
         _view: null,
+        _itemViews: [],
         ready: function () {
             this.initialize();
             this.DeskController.createNew();
@@ -20,18 +21,7 @@
             //TODO: this event should be passed into ghostbox
             function onThreshold(coord){
                 var item = MessyDesk.DeskController.createItem(coord);
-                var itemView = MessyDesk.DeskItemView.create({
-                    templateName: 'deskItem',
-                    classNameBindings: ['class1'],
-                    class1: 'desk-item',
-                    attributeBindings: ['style'],
-                    style: 'left: {left};top: {top}; width: {width}px; height: {height}px'
-                        .replace('{left}', coord.left)
-                        .replace('{top}', coord.top)
-                        .replace('{width}', coord.width)
-                        .replace('{height}', coord.height)
-                });
-                itemView.appendTo(MessyDesk.rootElement);
+                MessyDesk.createItemView(item);
             }
 
             // TODO: configuration. default to false
@@ -45,18 +35,16 @@
                     elementBottom = elementOffset.top + $element.height(),
                     collisionsFound = [];
 
-                $('.desk-item').each(function(index, deskItem){
-                    var $deskItem = $(deskItem),
-                        deskItemOffset = $deskItem.offset(),
-                        deskItemRight = deskItemOffset.left + $deskItem.width(),
-                        deskItemBottom = deskItemOffset.top + $deskItem.height(),
-                        elementLeftIsBetweenItemBounds = elementOffset.left >= deskItemOffset.left && elementOffset.left <= deskItemRight,
-                        elementRightIsBetweenItemBounds = elementRight >= deskItemOffset.left && elementRight <= deskItemRight,
-                        elementTopIsBetweenItemBounds = elementOffset.top >= deskItemOffset.top && elementOffset.top <= deskItemBottom,
-                        elementBottomIsBetweenItemBounds = elementBottom >= deskItemOffset.top && elementBottom <= deskItemBottom,
-                        itemLeftIsBetweenElementBounds = deskItemOffset.left >= elementOffset.left && deskItemOffset.left <= elementRight,
+                MessyDesk._itemViews.forEach(function(deskItem){
+                    var deskItemRight = deskItem.left + deskItem.width,
+                        deskItemBottom = deskItem.top + deskItem.height,
+                        elementLeftIsBetweenItemBounds = elementOffset.left >= deskItem.left && elementOffset.left <= deskItemRight,
+                        elementRightIsBetweenItemBounds = elementRight >= deskItem.left && elementRight <= deskItemRight,
+                        elementTopIsBetweenItemBounds = elementOffset.top >= deskItem.top && elementOffset.top <= deskItemBottom,
+                        elementBottomIsBetweenItemBounds = elementBottom >= deskItem.top && elementBottom <= deskItemBottom,
+                        itemLeftIsBetweenElementBounds = deskItem.left >= elementOffset.left && deskItem.left <= elementRight,
                         itemRightIsBetweenElementBounds = deskItemRight >= elementOffset.left && deskItemRight <= elementRight,
-                        itemTopIsBetweenElementBounds = deskItemOffset.top >= elementOffset.top && deskItemOffset.top <= elementBottom,
+                        itemTopIsBetweenElementBounds = deskItem.top >= elementOffset.top && deskItem.top <= elementBottom,
                         itemBottomIsBetweenElementBounds = deskItemBottom >= elementOffset.top && deskItemBottom <= elementBottom,
                         itemSidesAreWithinElementBounds = itemLeftIsBetweenElementBounds || itemRightIsBetweenElementBounds,
                         elementTopOrBottomIsWithinItemBounds = elementTopIsBetweenItemBounds || elementBottomIsBetweenItemBounds,
@@ -69,15 +57,17 @@
                         (itemTopIsBetweenElementBounds && itemBottomIsBetweenElementBounds && elementSidesAreWithinItemBounds) ||
                         (itemLeftIsBetweenElementBounds && itemRightIsBetweenElementBounds && elementTopOrBottomIsWithinItemBounds) ||
                         (elementTopIsBetweenItemBounds && elementBottomIsBetweenItemBounds && itemSidesAreWithinElementBounds)) {
-                        collisionsFound.push($deskItem);
+                        collisionsFound.push(deskItem);
                     }
                 });
                 return collisionsFound;
             }
 
             function onCollision(collisions) {
-                $(collisions).each(function (index, element){
-                    $(element).addClass('selected');
+                collisions.forEach(function (item){
+                    item.selected = true;
+                    item.set('selected', true);
+                    item.update
                 });
             }
 
@@ -89,9 +79,10 @@
                     onCollision(collisions);
                 }
                 else if (ghost.width() > WIDTH_TO_LOCK && ghost.height() > HEIGHT_TO_LOCK) {
+                    var ghostOffset = ghost.offset();
                     onThreshold({
-                        left: ghost.css('left'),
-                        top: ghost.css('top'),
+                        left: ghostOffset.left,
+                        top: ghostOffset.top,
                         width: ghost.width(),
                         height: ghost.height()
                     });
@@ -101,9 +92,11 @@
                 ghost.remove();
             }
 
-            // TODO: passed in override, use view
+            // TODO: passed in override
             function onCreateGhost(){
-                $('.desk-item').removeClass('selected');
+                MessyDesk._itemViews.forEach(function (item){
+                    item.selected = false;
+                });
             }
 
             function createGhost(e){
@@ -191,8 +184,8 @@
 					.replace("{name}", JSON.stringify(this.name))
 					.replace("{items}", JSON.stringify(this.content));
 			},
-            createItem: function() {
-                var item = MessyDesk.Item.create();
+            createItem: function(coord) {
+                var item = MessyDesk.Item.create(coord);
                 this.addObject(item);
                 return item;
             },
@@ -215,6 +208,7 @@
             templateName: 'desk',
             destroy: function(){
                 $(MessyDesk.rootElement).empty();
+                MessyDesk._itemViews = [];
                 this._super();
             },
             deleteDesk: function () {
@@ -225,7 +219,12 @@
             }
         }),
         DeskItemView: Ember.View.extend({
-            templateName: 'deskItem'
+            templateName: 'deskItem',
+            selected: false,
+            left: 0,
+            top: 0,
+            width: 0,
+            height: 0
         }),
         createView: function (){
             this._view = this.DeskView.create({
@@ -233,6 +232,26 @@
             });
             this._view.appendTo($(this.rootElement));
             return this._view;
+        },
+        createItemView: function(item){
+            var itemView = MessyDesk.DeskItemView.create({
+                templateName: 'deskItem',
+                classNameBindings: ['itemClass', 'selected'],
+                itemClass: 'desk-item',
+                attributeBindings: ['style'],
+                selected: false,
+                left: item.left,
+                top: item.top,
+                width: item.width,
+                height: item.height,
+                style: 'left: {left}px;top: {top}px; width: {width}px; height: {height}px'
+                    .replace('{left}', item.left)
+                    .replace('{top}', item.top)
+                    .replace('{width}', item.width)
+                    .replace('{height}', item.height)
+            });
+            MessyDesk._itemViews.push(itemView);
+            itemView.appendTo(MessyDesk.rootElement);
         }
     });
 }());
