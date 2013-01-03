@@ -10,6 +10,7 @@
 
             //TODO: initialize ghostbox instead of calling this method.
             this.bindEvents();
+            this._super();
         },
         //TODO: rebuild as ghostbox module
         bindEvents: function () {
@@ -65,9 +66,7 @@
 
             function onCollision(collisions) {
                 collisions.forEach(function (item){
-                    item.selected = true;
                     item.set('selected', true);
-                    item.update
                 });
             }
 
@@ -95,7 +94,7 @@
             // TODO: passed in override
             function onCreateGhost(){
                 MessyDesk._itemViews.forEach(function (item){
-                    item.selected = false;
+                    item.set('selected', false);
                 });
             }
 
@@ -239,7 +238,6 @@
                 classNameBindings: ['itemClass', 'selected'],
                 itemClass: 'desk-item',
                 attributeBindings: ['style'],
-                selected: false,
                 left: item.left,
                 top: item.top,
                 width: item.width,
