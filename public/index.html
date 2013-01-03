@@ -5,21 +5,21 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>Messy Desk</title>
 		<meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="stylesheets/normalize.css">
-        <link rel="stylesheet" href="stylesheets/main.css">
-		<link rel="stylesheet" href="stylesheets/style.css" type="text/css"  />
+        <link rel="stylesheet" href="css/normalize.css" type="text/css">
+		<link rel="stylesheet" href="css/style.css" type="text/css"  />
 		<script id='desk' data-template-name='desk' type="text/x-handlebars">
             <span class='desk-admin'>
-                {{view MessyDesk.Name name="Name" id="Name" valueBinding="MessyDesk.MyDesk.name"}}
+                {{view MessyDesk.NameField name="NameField" id="NameField" valueBinding="MessyDesk.DeskController.name"}}
                 <span class='delete' {{action "deleteDesk"}}>X</span>
             </span>
 		</script>
+        <script id='deskItem' data-template-name='deskItem' type="text/x-handlebars"></script>
 	</head>
 	<body>
 		<div id='container'></div>
-		<script type="text/javascript" src="scripts/vendor/jquery-1.8.2.min.js"></script>
-		<script type="text/javascript" src="scripts/vendor/handlebars-1.0.0.beta.6.js"></script>
-		<script type="text/javascript" src="scripts/vendor/ember.js"></script>
+		<script type="text/javascript" src="scripts/lib/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript" src="scripts/lib/handlebars-1.0.0.beta.6.js"></script>
+		<script type="text/javascript" src="scripts/lib/ember.js"></script>
 		<script type="text/javascript" src="scripts/messydesk.js"></script>
 	</body>
 </html>
